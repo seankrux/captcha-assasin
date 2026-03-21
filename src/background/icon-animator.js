@@ -13,6 +13,7 @@ const COLORS = {
 };
 
 let animationTimer = null;
+let stateTimer = null;
 let animationFrame = 0;
 let currentState = 'idle';
 let pendingCaptchaCount = 0;
@@ -30,10 +31,14 @@ function setIconState(state, count) {
     pendingCaptchaCount = count;
   }
 
-  // Clear any running animation
+  // Clear any running timers
   if (animationTimer) {
     clearInterval(animationTimer);
     animationTimer = null;
+  }
+  if (stateTimer) {
+    clearTimeout(stateTimer);
+    stateTimer = null;
   }
 
   switch (state) {
@@ -48,8 +53,7 @@ function setIconState(state, count) {
         drawIcon(state, animationFrame);
       }, 80);
 
-      // Auto-transition after 8s if nothing happens
-      setTimeout(() => {
+      stateTimer = setTimeout(() => {
         if (currentState === 'detecting') setIconState('idle');
       }, 8000);
       break;
@@ -72,8 +76,7 @@ function setIconState(state, count) {
       chrome.action.setBadgeText({ text: pendingCaptchaCount > 0 ? String(pendingCaptchaCount) : '' });
       chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
 
-      // Hold green for 4s then return to idle
-      setTimeout(() => {
+      stateTimer = setTimeout(() => {
         if (currentState === 'solved') setIconState('idle');
       }, 4000);
       break;
@@ -84,7 +87,7 @@ function setIconState(state, count) {
       chrome.action.setBadgeText({ text: '!' });
       chrome.action.setBadgeBackgroundColor({ color: '#ef4444' });
 
-      setTimeout(() => {
+      stateTimer = setTimeout(() => {
         if (currentState === 'failed') {
           chrome.action.setBadgeText({ text: '' });
           setIconState('idle');

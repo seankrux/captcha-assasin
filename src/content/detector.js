@@ -184,6 +184,7 @@
         clearInterval(challengeCheck);
         challengeObserver.disconnect();
         chrome.runtime.sendMessage({ type: 'GET_SETTINGS' }, (response) => {
+          if (chrome.runtime.lastError) { injectSolverUI(); return; }
           if (response?.settings?.autoSolve) {
             setTimeout(() => solveVisibleChallenge(), response.settings.solveDelay || 500);
           } else {
@@ -199,6 +200,7 @@
         challengeObserver.disconnect();
         clearInterval(challengeCheck);
         chrome.runtime.sendMessage({ type: 'GET_SETTINGS' }, (response) => {
+          if (chrome.runtime.lastError) { injectSolverUI(); return; }
           if (response?.settings?.autoSolve) {
             setTimeout(() => solveVisibleChallenge(), response.settings.solveDelay || 500);
           } else {
@@ -218,7 +220,7 @@
 
   function attemptCheckboxClick() {
     chrome.runtime.sendMessage({ type: 'GET_SETTINGS' }, (response) => {
-      if (!response?.settings?.autoSolve) return;
+      if (chrome.runtime.lastError || !response?.settings?.autoSolve) return;
 
       const tryClick = setInterval(() => {
         for (const sel of CAPTCHA_SIGNALS.inIframe.checkboxSelectors) {

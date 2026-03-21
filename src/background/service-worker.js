@@ -39,9 +39,10 @@ async function handleMessage(message, sender) {
       if (stats) {
         stats.detected++;
         await chrome.storage.local.set({ stats });
+        setIconState('detecting', stats.detected);
+      } else {
+        setIconState('detecting');
       }
-      // Animate icon — captcha found! Show count
-      setIconState('detecting', stats.detected);
       return { shouldSolve: settings?.autoSolve ?? true, settings };
     }
 

@@ -194,6 +194,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   updateProviderHint();
 
+  // Dynamic version from manifest
+  try {
+    const ver = chrome.runtime.getManifest().version;
+    const verEl = $('#version');
+    if (verEl && ver) verEl.textContent = `v${ver}`;
+  } catch {}
+
   // --- Helpers ---
 
   function msg(payload) {
