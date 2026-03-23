@@ -304,7 +304,7 @@
       }, 2500);
 
     } catch (err) {
-      console.error('[CaptchaSolver] Error:', err);
+      // Solver encountered an error
       updateStatus(`Error: ${err.message}`);
       chrome.runtime.sendMessage({ type: 'LOG_RESULT', success: false, error: err.message });
       solverActive = false;
@@ -349,7 +349,7 @@
     return new Promise((resolve) => {
       chrome.runtime.sendMessage({ type: 'CAPTURE_TAB' }, (response) => {
         if (chrome.runtime.lastError || !response?.screenshot) {
-          console.warn('[CaptchaSolver] All capture methods failed');
+          // All capture methods failed — no screenshot available
           resolve(null);
           return;
         }
@@ -376,7 +376,7 @@
           try {
             return await captureImageToBase64(img);
           } catch (e) {
-            console.warn('[CaptchaSolver] Direct capture failed for', sel, e.message);
+            // Direct capture failed for this selector, try next
           }
         }
       }

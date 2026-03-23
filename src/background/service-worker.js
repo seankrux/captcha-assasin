@@ -102,7 +102,7 @@ async function handleMessage(message, sender) {
         );
         return { screenshot };
       } catch (err) {
-        console.error('[CaptchaSolver] Tab capture failed:', err.message);
+        // Tab capture failed
         return { screenshot: null, error: err.message };
       }
     }
