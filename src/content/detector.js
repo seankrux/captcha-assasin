@@ -173,7 +173,6 @@
   // ============================================================
 
   function handleInsideCaptchaIframe() {
-    console.log('[CaptchaSolver] Inside captcha iframe:', window.location.hostname);
 
     // Try auto-clicking checkbox first
     attemptCheckboxClick();
@@ -692,7 +691,6 @@
     if (detectedCaptchas.has(key)) return;
     detectedCaptchas.add(key);
 
-    console.log(`[CaptchaSolver] Detected ${type}:`, element);
     chrome.runtime.sendMessage({
       type: 'CAPTCHA_DETECTED',
       captchaType: type,
@@ -763,7 +761,6 @@
       }
     }
 
-    console.log(`[CaptchaSolver] ${text}`);
   }
 
 })();

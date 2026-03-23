@@ -21,7 +21,6 @@ chrome.runtime.onInstalled.addListener(async () => {
     stats: { detected: 0, solved: 0, failed: 0 }
   });
   setIconState('idle');
-  console.log('[CaptchaSolver] Extension installed');
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
