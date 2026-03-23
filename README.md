@@ -90,3 +90,7 @@ src/
 ## License
 
 MIT
+
+---
+
+Made with 💛 by Sean G
