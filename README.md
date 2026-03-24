@@ -14,7 +14,27 @@
 
 ## Overview
 
-Chrome extension that uses Vision AI to automatically detect and solve captchas across the web. Supports multiple cloud providers and fully offline local LLMs via Ollama.
+Captcha Assasin is a Chrome extension that uses vision-capable AI models to detect, interpret, and solve captchas directly in the browser. It is designed as a flexible multi-provider system, supporting frontier cloud models and fully local vision models through Ollama in the same product flow.
+
+## Why Captcha Assasin?
+
+Most captcha solvers force a single deployment model: either a hosted API or a closed, opaque backend. Captcha Assasin stands out with a dual approach that combines:
+
+- Bring-your-own-key support for leading cloud vision models
+- Fully local inference through Ollama for privacy-sensitive or offline workflows
+
+That makes it a stronger portfolio project than a typical single-provider integration. The same extension UX can route captcha analysis through Claude, GPT-4o, Gemini, Qwen-VL, or local vision models without changing the core solving experience.
+
+## Architecture
+
+Captcha Assasin uses a layered pipeline to turn live captcha challenges into structured actions:
+
+1. **Detection layer** scans the DOM, images, and nested iframes for reCAPTCHA, hCaptcha, Turnstile, mtCaptcha, FunCaptcha, and generic captcha signals.
+2. **Capture layer** extracts the nearest captcha image when possible, composites challenge grids when needed, and falls back to tab screenshots for difficult iframe-based challenges.
+3. **Vision inference layer** sends the captured image to a provider adapter in `src/utils/api.js`, which normalizes requests across Claude, GPT-4o, Gemini, Qwen-VL, and local Ollama models.
+4. **Execution layer** parses the model response into tile clicks, text entry, or element actions, then applies human-like timing and randomized interactions before submitting.
+
+The extension architecture separates detection, capture, inference, and action execution across content scripts, the background service worker, and provider-specific adapters. This keeps the system easy to extend with new captcha heuristics or additional model backends.
 
 ## Supported Providers
 
@@ -25,6 +45,19 @@ Chrome extension that uses Vision AI to automatically detect and solve captchas 
 | Gemini (Google) | `gemini-2.0-flash` | `AIza...` |
 | Qwen-VL (Alibaba) | `qwen-vl-max` | `sk-...` |
 | Ollama (Local) | `llava`, `moondream`, etc. | Model name |
+
+## Supported Models
+
+| Model | Provider | Local/Cloud | Notes |
+|-------|----------|-------------|-------|
+| `claude-sonnet-4-20250514` | Anthropic | Cloud | Strong multimodal reasoning for instruction-heavy image challenges |
+| `gpt-4o` | OpenAI | Cloud | General-purpose vision model with fast response times and broad tooling support |
+| `gemini-2.0-flash` | Google | Cloud | Low-latency multimodal model with API key or OAuth support |
+| `qwen-vl-max` | Alibaba | Cloud | Vision-language model available through DashScope's compatible chat API |
+| `llava` | Ollama | Local | Default local vision model path in the extension |
+| `moondream` | Ollama | Local | Lightweight option that works well for OCR-style captcha recognition |
+| `minicpm-v` | Ollama | Local | Efficient local multimodal model supported by the validation flow |
+| `bakllava`, `cogvlm`, `nanollava`, `llava-llama3`, `llava-phi3` | Ollama | Local | Additional local vision models the extension recognizes as compatible |
 
 ## Features
 
@@ -56,13 +89,36 @@ Chrome extension that uses Vision AI to automatically detect and solve captchas 
 | FunCaptcha/Arkose | Iframe | Screenshot + AI |
 | Generic image captcha | `img[src*=captcha]` | AI Solve button |
 
-## Installation
+## Getting Started
 
-1. Clone this repository
-2. Open `chrome://extensions/` in Chrome
-3. Enable **Developer mode** (top right toggle)
-4. Click **Load unpacked** and select this folder
-5. Click the extension icon to configure
+### Install the extension
+
+1. Clone or download this repository to your machine.
+2. Open `chrome://extensions/` in Chrome.
+3. Enable **Developer mode** using the toggle in the top-right corner.
+4. Click **Load unpacked** and select this project folder.
+5. Pin the extension and open the popup to configure a provider.
+
+### Choose your inference path
+
+1. Select a provider from the dropdown in the popup.
+2. Enter your API key for a cloud model, or enter an Ollama model name for local execution.
+3. Click the verify button to validate connectivity.
+4. Save settings and browse normally; the extension will detect supported captchas automatically.
+
+### Optional: run locally with Ollama
+
+1. Install [Ollama](https://ollama.ai).
+2. Pull a vision-capable local model:
+
+```bash
+ollama pull llava
+# or
+ollama pull moondream
+```
+
+3. Make sure Ollama is running on `http://localhost:11434`.
+4. In the extension, choose **Ollama** and enter the model name you pulled.
 
 ## Configuration
 
@@ -99,6 +155,17 @@ src/
   utils/
     api.js                       # AI provider configs + validation
 ```
+
+## Contributing
+
+Contributions are welcome, especially in areas that improve solver accuracy, model coverage, and extension UX.
+
+1. Fork the repository and create a focused feature branch.
+2. Keep changes scoped and document any new provider, captcha type, or prompt logic.
+3. Test your changes against at least one supported captcha flow and, if relevant, one cloud provider or local Ollama model.
+4. Open a pull request with a concise summary of the problem, the implementation approach, and the expected behavior change.
+
+If you add a new provider or model, update the adapter logic in `src/utils/api.js`, the popup provider configuration, and the README tables so documentation stays aligned with the product.
 
 ## License
 
