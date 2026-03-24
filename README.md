@@ -6,7 +6,6 @@
     <img src="https://img.shields.io/badge/Chrome-Extension-4285F4?style=flat-square&logo=googlechrome&logoColor=white" alt="Chrome Extension" />
     <img src="https://img.shields.io/badge/Manifest-V3-34A853?style=flat-square" alt="Manifest V3" />
     <img src="https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript" />
-    <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" />
   </p>
 </div>
 
@@ -167,10 +166,4 @@ Contributions are welcome, especially in areas that improve solver accuracy, mod
 
 If you add a new provider or model, update the adapter logic in `src/utils/api.js`, the popup provider configuration, and the README tables so documentation stays aligned with the product.
 
-## License
-
-[MIT](LICENSE)
-
----
-
-<p align="center">Made with 💛 by Sean G</p>
+<p align="center">Made with 💛 by <a href="https://www.seanguillermo.com"><strong>Sean G</strong></a></p>
