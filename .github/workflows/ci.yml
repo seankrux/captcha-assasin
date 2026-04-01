@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate manifest
+        run: |
+          if [ -f manifest.json ]; then
+            echo "Manifest found at root"
+            python3 -m json.tool manifest.json > /dev/null
+            echo "Manifest version: $(python3 -c \"import json; print(json.load(open('manifest.json'))[manifest_version])\")"
+          elif [ -f src/manifest.json ]; then
+            echo "Manifest found in src/"
+            python3 -m json.tool src/manifest.json > /dev/null
+          else
+            echo "No manifest.json found" && exit 1
+          fi
