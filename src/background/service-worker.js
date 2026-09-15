@@ -13,13 +13,20 @@ const DEFAULT_SETTINGS = {
 };
 
 chrome.runtime.onInstalled.addListener(async () => {
-  const { settings } = await chrome.storage.local.get('settings');
-  if (!settings) {
-    await chrome.storage.local.set({ settings: DEFAULT_SETTINGS });
+  const { settings, stats } = await chrome.storage.local.get(['settings', 'stats']);
+  const initialState = {};
+
+  // Preserve user data during extension updates while backfilling new defaults.
+  const mergedSettings = { ...DEFAULT_SETTINGS, ...settings };
+  if (!settings || Object.keys(DEFAULT_SETTINGS).some(key => settings[key] === undefined)) {
+    initialState.settings = mergedSettings;
   }
-  await chrome.storage.local.set({
-    stats: { detected: 0, solved: 0, failed: 0 }
-  });
+  if (!stats) {
+    initialState.stats = { detected: 0, solved: 0, failed: 0 };
+  }
+  if (Object.keys(initialState).length > 0) {
+    await chrome.storage.local.set(initialState);
+  }
   setIconState('idle');
 });
 
@@ -47,7 +54,7 @@ async function handleMessage(message, sender) {
 
     case 'GET_SETTINGS': {
       const { settings } = await chrome.storage.local.get('settings');
-      return { settings: settings || DEFAULT_SETTINGS };
+      return { settings: { ...DEFAULT_SETTINGS, ...settings } };
     }
 
     case 'SAVE_SETTINGS': {
